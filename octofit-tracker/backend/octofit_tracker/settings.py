@@ -8,7 +8,24 @@ DEBUG = True
 
 
 # Allow all hosts for development
-ALLOWED_HOSTS = ['*']
+import os
+
+# Allow Codespace public URL if running in Codespaces
+codespace_name = os.environ.get('CODESPACE_NAME')
+if codespace_name:
+    ALLOWED_HOSTS = [f"{codespace_name}-8000.app.github.dev"]
+else:
+    ALLOWED_HOSTS = ['*']
+import os
+
+# Allow Codespace public URL if running in Codespaces
+codespace_name = os.environ.get('CODESPACE_NAME')
+if codespace_name:
+    ALLOWED_HOSTS = [f"{codespace_name}-8000.app.github.dev"]
+else:
+    ALLOWED_HOSTS = ['*']
+
+INSTALLED_APPS = [
 
 INSTALLED_APPS = [
     'django.contrib.admin',
