@@ -73,4 +73,5 @@ class Command(BaseCommand):
             total_points = sum([int(a.duration_minutes) for a in user.activities.all()])
             LeaderboardEntry.objects.create(user=user, total_points=total_points, rank=idx)
 
-        self.stdout.write(self.style.SUCCESS('Database populated.'))
+        self.stdout.write(self.style.SUCCESS('Populate the octofit_db database with test data'))
+
