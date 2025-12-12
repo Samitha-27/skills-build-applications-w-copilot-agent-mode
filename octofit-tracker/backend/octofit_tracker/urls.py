@@ -22,6 +22,7 @@ def api_root(request):
     return HttpResponse(f"API root - {base_url}")
 
 urlpatterns = [
+    path('', api_root, name='root'),
     path('admin/', admin.site.urls),
     path('api/', api_root, name='api-root'),
     path('api/', include(router.urls)),

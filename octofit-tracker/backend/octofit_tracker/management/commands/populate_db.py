@@ -7,7 +7,7 @@ import random
 User = get_user_model()
 
 class Command(BaseCommand):
-    help = 'Populate the octofit_db with sample data for testing'
+    help = 'Populate the octofit_db database with test data (superheroes, Marvel/DC teams)'
 
     def handle(self, *args, **options):
         self.stdout.write('Populating database...')
@@ -17,34 +17,48 @@ class Command(BaseCommand):
         Activity.objects.all().delete()
         Workout.objects.all().delete()
         Team.objects.all().delete()
-        User.objects.filter(username__startswith='testuser').delete()
+        User.objects.filter(username__in=[
+            'superman', 'batman', 'wonderwoman', 'flash',
+            'ironman', 'spiderman', 'captainamerica', 'hulk'
+        ]).delete()
 
-        # Create users
+        # Create superhero users
+        marvel_heroes = [
+            {'username': 'ironman', 'email': 'ironman@marvel.com'},
+            {'username': 'spiderman', 'email': 'spiderman@marvel.com'},
+            {'username': 'captainamerica', 'email': 'cap@marvel.com'},
+            {'username': 'hulk', 'email': 'hulk@marvel.com'},
+        ]
+        dc_heroes = [
+            {'username': 'superman', 'email': 'superman@dc.com'},
+            {'username': 'batman', 'email': 'batman@dc.com'},
+            {'username': 'wonderwoman', 'email': 'wonderwoman@dc.com'},
+            {'username': 'flash', 'email': 'flash@dc.com'},
+        ]
         users = []
-        for i in range(1, 5):
-            username = f'testuser{i}'
-            user = User.objects.create_user(username=username, email=f'{username}@example.com', password='password')
+        for hero in marvel_heroes + dc_heroes:
+            user = User.objects.create_user(username=hero['username'], email=hero['email'], password='password')
             users.append(user)
 
-        # Create teams
-        t1 = Team.objects.create(name='Alpha Team')
-        t1.members.set(users[:2])
-        t2 = Team.objects.create(name='Beta Team')
-        t2.members.set(users[2:])
+        # Create teams Marvel and DC
+        marvel_team = Team.objects.create(name='Team Marvel')
+        marvel_team.members.set(users[:4])
+        dc_team = Team.objects.create(name='Team DC')
+        dc_team.members.set(users[4:])
 
         # Create workouts
-        w1 = Workout.objects.create(name='Morning Run', difficulty='medium', suggested_duration_minutes=30)
-        w2 = Workout.objects.create(name='Strength Training', difficulty='hard', suggested_duration_minutes=45)
+        w1 = Workout.objects.create(name='Save the World', difficulty='hard', suggested_duration_minutes=60)
+        w2 = Workout.objects.create(name='Secret Training', difficulty='medium', suggested_duration_minutes=45)
 
-        # Create activities
+        # Create activities for each hero
         activity_types = ['run', 'bike', 'swim', 'lift', 'yoga']
         for user in users:
             for _ in range(3):
                 act_type = random.choice(activity_types)
-                duration = random.uniform(20, 90)
-                distance = random.uniform(1, 10) if act_type in ['run', 'bike', 'swim'] else None
-                calories = int(duration * random.uniform(5, 10))
-                act = Activity.objects.create(
+                duration = random.uniform(30, 120)
+                distance = random.uniform(1, 20) if act_type in ['run', 'bike', 'swim'] else None
+                calories = int(duration * random.uniform(8, 15))
+                Activity.objects.create(
                     user=user,
                     activity_type=act_type,
                     duration_minutes=duration,
